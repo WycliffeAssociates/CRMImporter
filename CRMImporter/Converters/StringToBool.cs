@@ -21,7 +21,7 @@ namespace CRMImporter.Converters
         public object Convert(object input, IOrganizationService service)
         {
             string value = ((string)input).ToLower();
-            if (this.FalseValue != null && (value != TrueValue || value != FalseValue))
+            if (this.FalseValue != null && !(value == TrueValue || value == FalseValue))
             {
                 throw new Exception($"Strict convert. {value} is not a valid boolean convert value. Possible values {this.TrueValue}, {this.FalseValue}");
             }
