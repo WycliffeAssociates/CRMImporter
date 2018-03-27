@@ -14,12 +14,23 @@ namespace CRMImporter
         public FieldMap Key;
         public List<FieldMap> Mapping;
 
+        /// <summary>
+        /// ImportMap Constructor
+        /// </summary>
+        /// <param name="entity">Logical name of the entity to use in CRM</param>
+        /// <param name="key">Mapping for the attribute that is used to match records in CRM</param>
         public ImportMap(string entity, FieldMap key)
         {
             this.EntityName = entity;
             this.Key = key;
         }
 
+        /// <summary>
+        /// Import data into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
         public void Import(IOrganizationService service, List<Dictionary<string, object>> data, Action<int,int> callback = null)
         {
             EntityMetadata metadata = GetMetaData(service);
@@ -131,7 +142,7 @@ namespace CRMImporter
             if (input is string && field.AttributeType == AttributeTypeCode.Picklist)
             {
                 PicklistAttributeMetadata picklist = (PicklistAttributeMetadata)field;
-                var tmp = picklist.OptionSet.Options.First(o => o.Label.UserLocalizedLabel.Label == (string)input);
+                var tmp = picklist.OptionSet.Options.FirstOrDefault(o => o.Label.UserLocalizedLabel.Label == (string)input);
                 if (tmp != null)
                 {
                     return new OptionSetValue(tmp.Value.Value);

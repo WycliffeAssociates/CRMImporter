@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Wycliffeassociates.CRMImport</id>
+    <version>$version$</version>
+    <title>CRMImport</title>
+    <authors>@rbnswartz</authors>
+    <owners>@rbnswartz</owners>
+    <projectUrl>https://github.com/WycliffeAssociates/CRMImporter/</projectUrl>
+    <licenseUrl>https://github.com/WycliffeAssociates/CRMImporter/blob/master/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A library that allows quick creation of CRM imports</description>
+    <summary>A library that allows quick creation of CRM imports</summary>
+    <releaseNotes>Fixed a problem with unknown OptionSet values</releaseNotes>
+    <copyright>Copyright Wycliffe Associates 2018</copyright>
+    <tags>CRM data import</tags>
+  </metadata>
+</package>
