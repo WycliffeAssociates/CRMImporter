@@ -53,6 +53,10 @@ namespace CRMImporter
             Entity target = new Entity(this.EntityName, current.Id);
             foreach (FieldMap field in this.Mapping)
             {
+                if (!data.ContainsKey(field.SourceField))
+                {
+                    throw new KeyNotFoundException($"Key {field.SourceField} doesn't exist in the source data");
+                }
                 object tmp = this.ConvertValue(data[field.SourceField], field, meta.Attributes.First(f => f.LogicalName == field.TargetField), service);
                 if (!current.Contains(field.TargetField) || current[field.TargetField] != tmp)
                 {
@@ -70,6 +74,10 @@ namespace CRMImporter
             // Set primary field
             foreach (var item in this.Mapping)
             {
+                if (!data.ContainsKey(item.SourceField))
+                {
+                    throw new KeyNotFoundException($"Key {item.SourceField} doesn't exist in the source data");
+                }
                 AttributeMetadata field = meta.Attributes.First(f => f.LogicalName == item.TargetField);
                 target[item.TargetField] = this.ConvertValue(data[item.SourceField], item, field, service);
             }
