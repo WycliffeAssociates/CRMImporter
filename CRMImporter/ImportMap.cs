@@ -5,6 +5,7 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Messages;
 using Microsoft.Xrm.Sdk.Metadata;
 using Microsoft.Xrm.Sdk.Query;
+using CRMImporter.ActionHandlers;
 
 namespace CRMImporter
 {
@@ -13,6 +14,8 @@ namespace CRMImporter
         public string EntityName;
         public FieldMap Key;
         public List<FieldMap> Mapping;
+        public IActionHandler CreateHandler;
+        public IActionHandler UpdateHandler;
 
         /// <summary>
         /// ImportMap Constructor
@@ -23,6 +26,8 @@ namespace CRMImporter
         {
             this.EntityName = entity;
             this.Key = key;
+            this.CreateHandler = new DefaultCreateHandler();
+            this.UpdateHandler = new DefaultUpdateHandler();
         }
 
         /// <summary>
@@ -63,11 +68,11 @@ namespace CRMImporter
                 if (result.Entities.Count == 0)
                 {
                     // Create new
-                    this.CreateEntity(row, metadata, service);
+                    this.CreateHandler.Execute(this.CreateEntityToCreate(row, metadata, service), service);
                 }
                 else
                 {
-                    this.UpdateEntity(result.Entities[0], row, metadata, service);
+                    this.UpdateHandler.Execute(this.CreateEntityToUpdate(result.Entities[0], row, metadata, service), service);
                 }
                 // Call progress callback if it exists
                 callback?.Invoke(count, total);
@@ -101,7 +106,7 @@ namespace CRMImporter
         }
 
 
-        private void UpdateEntity(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
+        private Entity CreateEntityToUpdate(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
         {
             Entity target = new Entity(this.EntityName, current.Id);
             foreach (FieldMap field in this.Mapping)
@@ -116,12 +121,9 @@ namespace CRMImporter
                     target[field.TargetField] = tmp;
                 }
             }
-            if (target.Attributes.Count > 0)
-            {
-                service.Update(target);
-            }
+            return target;
         }
-        private void CreateEntity(Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
+        private Entity CreateEntityToCreate(Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
         {
             Entity target = new Entity(this.EntityName);
             // Set primary field
@@ -134,7 +136,7 @@ namespace CRMImporter
                 AttributeMetadata field = meta.Attributes.First(f => f.LogicalName == item.TargetField);
                 target[item.TargetField] = ConvertValue(data[item.SourceField], item, field, service);
             }
-            service.Create(target);
+            return target;
         }
 
         public static object ConvertValue(object input, FieldMap map, AttributeMetadata field, IOrganizationService service)

@@ -87,11 +87,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionHandlers\DefaultCreateHandler.cs" />
+    <Compile Include="ActionHandlers\DefaultUpdateHandler.cs" />
+    <Compile Include="ActionHandlers\EmptyHandler.cs" />
     <Compile Include="Converters\LookupValue.cs" />
     <Compile Include="Converters\NullToString.cs" />
     <Compile Include="Converters\StringMapTranslation.cs" />
     <Compile Include="Converters\StringToBool.cs" />
     <Compile Include="FieldMap.cs" />
+    <Compile Include="IActionHandler.cs" />
     <Compile Include="IConverter.cs" />
     <Compile Include="ImportMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -99,6 +103,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
