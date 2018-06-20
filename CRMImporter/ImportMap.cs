@@ -26,33 +26,6 @@ namespace CRMImporter
         }
 
         /// <summary>
-        /// Import a list of objects into CRM
-        /// </summary>
-        /// <param name="service">Connection to CRM (IOrganizationService)</param>
-        /// <param name="data">Data to import</param>
-        /// <param name="callback">Optional progress callback</param>
-        public void Import(IOrganizationService service, List<object> data, Action<int, int> callback = null)
-        {
-            List<Dictionary<string, object>> convertedData = new List<Dictionary<string, object>>();
-            foreach (var i in data)
-            {
-                convertedData.Add(ConvertToDictionary(i));
-            }
-            Import(service, convertedData, callback);
-        }
-
-        /// <summary>
-        /// Import a single object into CRM
-        /// </summary>
-        /// <param name="service">Connection to CRM (IOrganizationService)</param>
-        /// <param name="data">Data to import</param>
-        /// <param name="callback">Optional progress callback</param>
-        public void Import(IOrganizationService service, object data, Action<int, int> callback = null)
-        {
-            Import(service, new List<Dictionary<string, object>>() { ConvertToDictionary(data) }, callback);
-        }
-
-        /// <summary>
         /// Convert an object to a dictionary
         /// </summary>
         /// <param name="input">The object to convert</param>
@@ -100,6 +73,33 @@ namespace CRMImporter
                 callback?.Invoke(count, total);
             }
         }
+        /// <summary>
+        /// Import a list of objects into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
+        public void Import<T>(IOrganizationService service, List<T> data, Action<int, int> callback = null)
+        {
+            List<Dictionary<string, object>> convertedData = new List<Dictionary<string, object>>();
+            foreach (var i in data)
+            {
+                convertedData.Add(ConvertToDictionary(i));
+            }
+            Import(service, convertedData, callback);
+        }
+
+        /// <summary>
+        /// Import a single object into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
+        public void Import(IOrganizationService service, object data, Action<int, int> callback = null)
+        {
+            Import(service, new List<Dictionary<string, object>>() { ConvertToDictionary(data) }, callback);
+        }
+
 
         private void UpdateEntity(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
         {
