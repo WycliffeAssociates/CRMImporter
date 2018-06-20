@@ -24,6 +24,13 @@ namespace CRMImporter
             this.EntityName = entity;
             this.Key = key;
         }
+
+        /// <summary>
+        /// Import a list of objects into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
         public void Import(IOrganizationService service, List<object> data, Action<int, int> callback = null)
         {
             List<Dictionary<string, object>> convertedData = new List<Dictionary<string, object>>();
@@ -33,6 +40,18 @@ namespace CRMImporter
             }
             Import(service, convertedData, callback);
         }
+
+        /// <summary>
+        /// Import a single object into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
+        public void Import(IOrganizationService service, object data, Action<int, int> callback = null)
+        {
+            Import(service, new List<Dictionary<string, object>>() { ConvertToDictionary(data) }, callback);
+        }
+
         /// <summary>
         /// Convert an object to a dictionary
         /// </summary>
