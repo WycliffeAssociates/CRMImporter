@@ -24,6 +24,29 @@ namespace CRMImporter
             this.EntityName = entity;
             this.Key = key;
         }
+        public void Import(IOrganizationService service, List<object> data, Action<int, int> callback = null)
+        {
+            List<Dictionary<string, object>> convertedData = new List<Dictionary<string, object>>();
+            foreach (var i in data)
+            {
+                convertedData.Add(ConvertToDictionary(i));
+            }
+            Import(service, convertedData, callback);
+        }
+        /// <summary>
+        /// Convert an object to a dictionary
+        /// </summary>
+        /// <param name="input">The object to convert</param>
+        /// <returns>A dictionary of string, object that expresses the data in the object</returns>
+        public Dictionary<string, object> ConvertToDictionary(object input)
+        {
+            Dictionary<string, object> output = new Dictionary<string, object>();
+            foreach (var field in input.GetType().GetProperties())
+            {
+                output.Add(field.Name, field.GetValue(input));
+            }
+            return output;
+        }
 
         /// <summary>
         /// Import data into CRM
