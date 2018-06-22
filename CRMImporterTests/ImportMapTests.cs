@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Xrm.Sdk.Metadata;
 using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
+using CRMImporter.Converters;
 
 namespace CRMImporterTests
 {
@@ -119,6 +120,14 @@ namespace CRMImporterTests
         {
             FieldMap map = new FieldMap("source", "dest");
             ImportMap.ConvertValue(1, map, new LookupAttributeMetadata(), service);
+        }
+
+        [TestMethod]
+        public void TestWithConverter()
+        {
+            string trueValue = "Y";
+            FieldMap map = new FieldMap("source", "dest", new StringToBool(trueValue));
+            Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
         }
 
         private Label GenerateLabel(string labelText)
