@@ -108,7 +108,9 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Converters\LookupValueTests.cs" />
+    <Compile Include="Converters\StringMapTranslationTests.cs" />
     <Compile Include="Converters\StringToBoolTests.cs" />
+    <Compile Include="ImportMapTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

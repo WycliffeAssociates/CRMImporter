@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\LookupValue.cs" />
+    <Compile Include="Converters\StringMapTranslation.cs" />
     <Compile Include="Converters\StringToBool.cs" />
     <Compile Include="FieldMap.cs" />
     <Compile Include="IConverter.cs" />

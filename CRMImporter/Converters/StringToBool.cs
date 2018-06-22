@@ -20,6 +20,10 @@ namespace CRMImporter.Converters
 
         public object Convert(object input, IOrganizationService service)
         {
+            if (input == null)
+            {
+                return null;
+            }
             string value = ((string)input).ToLower();
             if (this.FalseValue != null && !(value == TrueValue || value == FalseValue))
             {

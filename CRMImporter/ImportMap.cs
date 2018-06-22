@@ -26,6 +26,21 @@ namespace CRMImporter
         }
 
         /// <summary>
+        /// Convert an object to a dictionary
+        /// </summary>
+        /// <param name="input">The object to convert</param>
+        /// <returns>A dictionary of string, object that expresses the data in the object</returns>
+        public static Dictionary<string, object> ConvertToDictionary(object input)
+        {
+            Dictionary<string, object> output = new Dictionary<string, object>();
+            foreach (var field in input.GetType().GetProperties())
+            {
+                output.Add(field.Name, field.GetValue(input));
+            }
+            return output;
+        }
+
+        /// <summary>
         /// Import data into CRM
         /// </summary>
         /// <param name="service">Connection to CRM (IOrganizationService)</param>
@@ -42,7 +57,7 @@ namespace CRMImporter
                 QueryExpression query = new QueryExpression(this.EntityName);
                 query.Criteria.AddCondition(Key.TargetField,
                     ConditionOperator.Equal,
-                    this.ConvertValue(row[Key.SourceField], Key, metadata.Attributes.First(m => m.LogicalName == Key.TargetField), service));
+                    ConvertValue(row[Key.SourceField], Key, metadata.Attributes.First(m => m.LogicalName == Key.TargetField), service));
                 query.ColumnSet = new ColumnSet(Mapping.Select(i => i.TargetField).ToArray());
                 var result = service.RetrieveMultiple(query);
                 if (result.Entities.Count == 0)
@@ -58,6 +73,33 @@ namespace CRMImporter
                 callback?.Invoke(count, total);
             }
         }
+        /// <summary>
+        /// Import a list of objects into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
+        public void Import<T>(IOrganizationService service, List<T> data, Action<int, int> callback = null)
+        {
+            List<Dictionary<string, object>> convertedData = new List<Dictionary<string, object>>();
+            foreach (var i in data)
+            {
+                convertedData.Add(ConvertToDictionary(i));
+            }
+            Import(service, convertedData, callback);
+        }
+
+        /// <summary>
+        /// Import a single object into CRM
+        /// </summary>
+        /// <param name="service">Connection to CRM (IOrganizationService)</param>
+        /// <param name="data">Data to import</param>
+        /// <param name="callback">Optional progress callback</param>
+        public void Import(IOrganizationService service, object data, Action<int, int> callback = null)
+        {
+            Import(service, new List<Dictionary<string, object>>() { ConvertToDictionary(data) }, callback);
+        }
+
 
         private void UpdateEntity(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
         {
@@ -68,7 +110,7 @@ namespace CRMImporter
                 {
                     throw new KeyNotFoundException($"Key {field.SourceField} doesn't exist in the source data");
                 }
-                object tmp = this.ConvertValue(data[field.SourceField], field, meta.Attributes.First(f => f.LogicalName == field.TargetField), service);
+                object tmp = ConvertValue(data[field.SourceField], field, meta.Attributes.First(f => f.LogicalName == field.TargetField), service);
                 if (!current.Contains(field.TargetField) || current[field.TargetField] != tmp)
                 {
                     target[field.TargetField] = tmp;
@@ -90,12 +132,12 @@ namespace CRMImporter
                     throw new KeyNotFoundException($"Key {item.SourceField} doesn't exist in the source data");
                 }
                 AttributeMetadata field = meta.Attributes.First(f => f.LogicalName == item.TargetField);
-                target[item.TargetField] = this.ConvertValue(data[item.SourceField], item, field, service);
+                target[item.TargetField] = ConvertValue(data[item.SourceField], item, field, service);
             }
             service.Create(target);
         }
 
-        private object ConvertValue(object input, FieldMap map, AttributeMetadata field, IOrganizationService service)
+        public static object ConvertValue(object input, FieldMap map, AttributeMetadata field, IOrganizationService service)
         {
             if (map.Convert != null)
             {
@@ -147,6 +189,11 @@ namespace CRMImporter
                 return (decimal)((int)input);
             }
 
+            if (input is Single && field.AttributeType == AttributeTypeCode.Decimal)
+            {
+                return (decimal)((Single)input);
+            }
+
             if (input is string && field.AttributeType == AttributeTypeCode.Picklist)
             {
                 PicklistAttributeMetadata picklist = (PicklistAttributeMetadata)field;
@@ -172,6 +219,27 @@ namespace CRMImporter
             if (input is bool && field.AttributeType == AttributeTypeCode.Boolean)
             {
                 return input;
+            }
+
+            if (input is float && field.AttributeType == AttributeTypeCode.Double)
+            {
+                return Convert.ToDouble((float)input);
+            }
+
+            if (input is double && field.AttributeType == AttributeTypeCode.Double)
+            {
+                return (double)input;
+            }
+
+            if (input is string && field.AttributeType == AttributeTypeCode.Status)
+            {
+                StatusAttributeMetadata picklist = (StatusAttributeMetadata)field;
+                var tmp = picklist.OptionSet.Options.FirstOrDefault(o => o.Label.UserLocalizedLabel.Label == (string)input);
+                if (tmp != null)
+                {
+                    return new OptionSetValue(tmp.Value.Value);
+                }
+                return null;
             }
 
 
