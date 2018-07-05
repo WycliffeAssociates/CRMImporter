@@ -130,6 +130,16 @@ namespace CRMImporterTests
             Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
         }
 
+        [TestMethod]
+        public void TestWithMultipleConverters()
+        {
+            string trueValue = "Yes";
+            StringMapTranslation stringMapConverter = new StringMapTranslation(new Dictionary<string, string> { ["Yes"] = "Y" });
+            StringToBool toBoolConverter = new StringToBool("Y");
+            FieldMap map = new FieldMap("source", "dest", stringMapConverter, toBoolConverter);
+            Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
+        }
+
         private Label GenerateLabel(string labelText)
         {
             return new Label
