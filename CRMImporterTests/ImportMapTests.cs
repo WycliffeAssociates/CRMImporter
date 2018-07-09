@@ -9,6 +9,7 @@ using Microsoft.Xrm.Sdk.Metadata;
 using FakeXrmEasy;
 using Microsoft.Xrm.Sdk;
 using CRMImporter.Converters;
+using CRMImporter.ActionHandlers;
 
 namespace CRMImporterTests
 {
@@ -32,6 +33,20 @@ namespace CRMImporterTests
             ImportMap map = new ImportMap(entityname, fieldMapping);
             Assert.AreEqual(entityname, map.EntityName);
             Assert.AreEqual(fieldMapping, map.Key);
+        }
+
+        [TestMethod]
+        public void TestConstructorWithHandlers()
+        {
+            string entityname = "entity";
+            IActionHandler createHandler = new EmptyHandler();
+            IActionHandler updateHandler = new EmptyHandler();
+            FieldMap fieldMapping = new FieldMap("source", "target");
+            ImportMap map = new ImportMap(entityname, fieldMapping, createHandler, updateHandler);
+            Assert.AreEqual(entityname, map.EntityName);
+            Assert.AreEqual(fieldMapping, map.Key);
+            Assert.AreEqual(createHandler, map.CreateHandler);
+            Assert.AreEqual(updateHandler, map.UpdateHandler);
         }
 
         [TestMethod]

@@ -107,6 +107,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ActionHandlers\DefaultCreateHandlerTests.cs" />
+    <Compile Include="ActionHandlers\DefaultUpdateHandlerTests.cs" />
+    <Compile Include="ActionHandlers\EmptyHandlerTests.cs" />
     <Compile Include="Converters\LookupValueTests.cs" />
     <Compile Include="Converters\NullToStringTests.cs" />
     <Compile Include="Converters\StringMapTranslationTests.cs" />
@@ -123,6 +126,7 @@
       <Name>CRMImporter</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
