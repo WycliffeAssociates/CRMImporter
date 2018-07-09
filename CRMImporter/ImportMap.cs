@@ -22,12 +22,13 @@ namespace CRMImporter
         /// </summary>
         /// <param name="entity">Logical name of the entity to use in CRM</param>
         /// <param name="key">Mapping for the attribute that is used to match records in CRM</param>
-        public ImportMap(string entity, FieldMap key)
+        public ImportMap(string entity, FieldMap key, IActionHandler create = null, IActionHandler update = null)
         {
             this.EntityName = entity;
             this.Key = key;
-            this.CreateHandler = new DefaultCreateHandler();
-            this.UpdateHandler = new DefaultUpdateHandler();
+            
+            this.CreateHandler = create == null ? new DefaultCreateHandler() : create;
+            this.UpdateHandler = update == null ? new DefaultUpdateHandler() : update;
         }
 
         /// <summary>
