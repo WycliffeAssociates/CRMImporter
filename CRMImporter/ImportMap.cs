@@ -139,9 +139,12 @@ namespace CRMImporter
 
         public static object ConvertValue(object input, FieldMap map, AttributeMetadata field, IOrganizationService service)
         {
-            if (map.Convert != null)
+            if (map.Convert.Length != 0)
             {
-                input = map.Convert.Convert(input, service);
+                foreach (var converter in map.Convert)
+                {
+                    input = converter.Convert(input, service);
+                }
             }
 
             if (input == null)
