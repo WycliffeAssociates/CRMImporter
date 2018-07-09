@@ -131,6 +131,20 @@ namespace CRMImporterTests
         }
 
         [TestMethod]
+        public void TestWithNullConverterList()
+        {
+            FieldMap map = new FieldMap("source", "dest", null);
+            Assert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
+        }
+
+        [TestMethod]
+        public void TestWithEmptyConverterList()
+        {
+            FieldMap map = new FieldMap("source", "dest", new IConverter[0]);
+            Assert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
+        }
+
+        [TestMethod]
         public void TestWithMultipleConverters()
         {
             string trueValue = "Yes";
