@@ -169,6 +169,12 @@ namespace CRMImporterTests
             Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
         }
 
+        [TestMethod]
+        public void TestCreateForUpdate()
+        {
+
+        }
+
         private Label GenerateLabel(string labelText)
         {
             return new Label
