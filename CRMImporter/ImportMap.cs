@@ -107,7 +107,7 @@ namespace CRMImporter
         }
 
 
-        private Entity CreateEntityToUpdate(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
+        private  Entity CreateEntityToUpdate(Entity current, Dictionary<string, object> data, EntityMetadata meta, IOrganizationService service)
         {
             Entity target = new Entity(this.EntityName, current.Id);
             foreach (FieldMap field in this.Mapping)
@@ -117,7 +117,8 @@ namespace CRMImporter
                     throw new KeyNotFoundException($"Key {field.SourceField} doesn't exist in the source data");
                 }
                 object tmp = ConvertValue(data[field.SourceField], field, meta.Attributes.First(f => f.LogicalName == field.TargetField), service);
-                if (!current.Contains(field.TargetField) || current[field.TargetField] != tmp)
+                object source = current.Contains(field.TargetField) ? current[field.TargetField] : null;
+                if (source != tmp)
                 {
                     target[field.TargetField] = tmp;
                 }
@@ -135,7 +136,11 @@ namespace CRMImporter
                     throw new KeyNotFoundException($"Key {item.SourceField} doesn't exist in the source data");
                 }
                 AttributeMetadata field = meta.Attributes.First(f => f.LogicalName == item.TargetField);
-                target[item.TargetField] = ConvertValue(data[item.SourceField], item, field, service);
+                object tmp = ConvertValue(data[item.SourceField], item, field, service);
+                if (tmp != null)
+                {
+                    target[item.TargetField] = tmp;
+                }
             }
             return target;
         }
