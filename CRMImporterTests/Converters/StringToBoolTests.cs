@@ -1,57 +1,57 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CRMImporter.Converters;
 using FakeXrmEasy;
+using FakeXrmEasy.Abstractions;
 using Microsoft.Xrm.Sdk;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace CRMImporterTests.Converters
 {
-    [TestClass]
     public class StringToBoolTests
     {
-        private XrmFakedContext context;
+        private IXrmFakedContext context;
         private IOrganizationService service;
 
-        [TestInitialize]
+        [SetUp]
         public void SetUp()
         {
-            this.context = new XrmFakedContext();
+            this.context = Utils.GetContext();
             this.service = this.context.GetOrganizationService();
         }
 
-        [TestMethod]
+        [Test]
         public void TestDefault()
         {
             string trueValue = "Yes";
             string falseValue = "No";
             StringToBool target = new StringToBool(trueValue);
-            Assert.AreEqual(true, target.Convert(trueValue, this.service));
-            Assert.AreEqual(false, target.Convert(falseValue, this.service));
+            ClassicAssert.AreEqual(true, target.Convert(trueValue, this.service));
+            ClassicAssert.AreEqual(false, target.Convert(falseValue, this.service));
         }
 
-        [TestMethod]
+        [Test]
         public void TestStrict()
         {
             string trueValue = "Yes";
             string falseValue = "No";
             StringToBool target = new StringToBool(trueValue, falseValue);
-            Assert.AreEqual(true, target.Convert(trueValue, this.service));
-            Assert.AreEqual(false, target.Convert(falseValue, this.service));
+            ClassicAssert.AreEqual(true, target.Convert(trueValue, this.service));
+            ClassicAssert.AreEqual(false, target.Convert(falseValue, this.service));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [Test]
         public void TestStrictMissingValue()
         {
             string trueValue = "Yes";
             string falseValue = "No";
             string missingValue = "A small sheep";
             StringToBool target = new StringToBool(trueValue, falseValue);
-            target.Convert(missingValue, this.service);
+            Assert.Throws<Exception>(() => target.Convert(missingValue, this.service));
         }
     }
 }

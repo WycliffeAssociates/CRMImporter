@@ -1,64 +1,62 @@
 ﻿using CRMImporter;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xrm.Sdk.Metadata;
-using FakeXrmEasy;
-using Microsoft.Xrm.Sdk;
 using CRMImporter.Converters;
 using CRMImporter.ActionHandlers;
+using FakeXrmEasy;
+using FakeXrmEasy.Abstractions;
+using Microsoft.Xrm.Sdk;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace CRMImporterTests
 {
-    [TestClass]
     public class ImportMapTests
     {
-        XrmFakedContext context;
+        IXrmFakedContext context;
         IOrganizationService service;
 
-        [TestInitialize]
+        [SetUp]
         public void SetUp()
         {
-            context = new XrmFakedContext();
+            context = Utils.GetContext();
             service = context.GetOrganizationService();
         }
-        [TestMethod]
+        [Test]
         public void TestConstructor()
         {
             string entityname = "entity";
             FieldMap fieldMapping = new FieldMap("source", "target");
             ImportMap map = new ImportMap(entityname, fieldMapping);
-            Assert.AreEqual(entityname, map.EntityName);
-            Assert.AreEqual(fieldMapping, map.Key);
+            ClassicAssert.AreEqual(entityname, map.EntityName);
+            ClassicAssert.AreEqual(fieldMapping, map.Key);
         }
 
-        [TestMethod]
+        [Test]
         public void TestConstructorWithHandlers()
         {
             string entityname = "entity";
             IActionHandler createHandler = new EmptyHandler();
             IActionHandler updateHandler = new EmptyHandler();
             FieldMap fieldMapping = new FieldMap("source", "target");
-            ImportMap map = new ImportMap(entityname, fieldMapping, createHandler, updateHandler);
-            Assert.AreEqual(entityname, map.EntityName);
-            Assert.AreEqual(fieldMapping, map.Key);
-            Assert.AreEqual(createHandler, map.CreateHandler);
-            Assert.AreEqual(updateHandler, map.UpdateHandler);
+            ImportMap map = new ImportMap(entityname, fieldMapping, createHandler, updateHandler); 
+            ClassicAssert.AreEqual(map.EntityName, entityname);
+            ClassicAssert.AreEqual(map.Key, fieldMapping);
+            ClassicAssert.AreEqual(createHandler, map.CreateHandler);
+            ClassicAssert.AreEqual(updateHandler, map.UpdateHandler);
         }
 
-        [TestMethod]
+        [Test]
         public void ConvertToDictionaryTests()
         {
             string fieldValue = "Value";
             var result = ImportMap.ConvertToDictionary(new DummyClass { DummyField = fieldValue });
-            Assert.IsTrue(result.ContainsKey("DummyField"));
-            Assert.AreEqual(result["DummyField"], fieldValue);
+            ClassicAssert.AreEqual(true, result.ContainsKey("DummyField"));
+            ClassicAssert.AreEqual(result["DummyField"], fieldValue);
         }
 
-        [TestMethod]
+        [Test]
         public void ConvertValueTests()
         {
             FieldMap map = new FieldMap("source", "dest");
@@ -102,71 +100,70 @@ namespace CRMImporterTests
                 )
             );
             OptionSetValue optionSetValue = new OptionSetValue(optionSetInt);
-            Assert.AreEqual(null, ImportMap.ConvertValue(null, map, new AttributeMetadata(), service));
-            Assert.AreEqual(1, ImportMap.ConvertValue(1, map, new IntegerAttributeMetadata(), service));
-            Assert.AreEqual(1, ImportMap.ConvertValue(1D, map, new IntegerAttributeMetadata(), service));
+            ClassicAssert.AreEqual(null, ImportMap.ConvertValue(null, map, new AttributeMetadata(), service));
+            ClassicAssert.AreEqual(1, ImportMap.ConvertValue(1, map, new IntegerAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1, ImportMap.ConvertValue(1D, map, new IntegerAttributeMetadata(), service));
 
-            Assert.AreEqual("string", ImportMap.ConvertValue("string", map, new StringAttributeMetadata(), service));
-            Assert.AreEqual("1", ImportMap.ConvertValue(1, map, new StringAttributeMetadata(), service));
+            ClassicAssert.AreEqual("string", ImportMap.ConvertValue("string", map, new StringAttributeMetadata(), service));
+            ClassicAssert.AreEqual("1", ImportMap.ConvertValue(1, map, new StringAttributeMetadata(), service));
 
-            Assert.AreEqual(1.0m, ImportMap.ConvertValue(1.0m, map, new DecimalAttributeMetadata(), service));
-            Assert.AreEqual(1.0m, ImportMap.ConvertValue(1.0f, map, new DecimalAttributeMetadata(), service));
-            Assert.AreEqual(1.0m, ImportMap.ConvertValue(1D, map, new DecimalAttributeMetadata(), service));
-            Assert.AreEqual(1.0m, ImportMap.ConvertValue(1, map, new DecimalAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0m, ImportMap.ConvertValue(1.0m, map, new DecimalAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0m, ImportMap.ConvertValue(1.0f, map, new DecimalAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0m, ImportMap.ConvertValue(1D, map, new DecimalAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0m, ImportMap.ConvertValue(1, map, new DecimalAttributeMetadata(), service));
 
-            Assert.AreEqual(1.0, ImportMap.ConvertValue(1.0, map, new DoubleAttributeMetadata(), service));
-            Assert.AreEqual(1.0, ImportMap.ConvertValue(1.0f, map, new DoubleAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0, ImportMap.ConvertValue(1.0, map, new DoubleAttributeMetadata(), service));
+            ClassicAssert.AreEqual(1.0, ImportMap.ConvertValue(1.0f, map, new DoubleAttributeMetadata(), service));
 
-            Assert.AreEqual(optionSetInt, ((OptionSetValue)ImportMap.ConvertValue(optionSetLabel, map, optionSetMetadata, service)).Value);
-            Assert.AreEqual(optionSetValue, ImportMap.ConvertValue(optionSetValue, map, new PicklistAttributeMetadata(), service));
+            ClassicAssert.AreEqual(optionSetInt, ((OptionSetValue)ImportMap.ConvertValue(optionSetLabel, map, optionSetMetadata, service)).Value);
+            ClassicAssert.AreEqual(optionSetValue, ImportMap.ConvertValue(optionSetValue, map, new PicklistAttributeMetadata(), service));
 
-            Assert.AreEqual(null, ImportMap.ConvertValue("UNKNOWNThing", map, optionSetMetadata, service));
-            Assert.AreEqual(true, ImportMap.ConvertValue("Yes", map, booleanMetadata, service));
-            Assert.AreEqual(true, ImportMap.ConvertValue(true, map, booleanMetadata, service));
+            ClassicAssert.AreEqual(null, ImportMap.ConvertValue("UNKNOWNThing", map, optionSetMetadata, service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue("Yes", map, booleanMetadata, service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue(true, map, booleanMetadata, service));
 
-            Assert.AreEqual(entityRef, ImportMap.ConvertValue(entityRef, map, new LookupAttributeMetadata(), service));
-            Assert.AreEqual(optionSetInt, ((OptionSetValue)ImportMap.ConvertValue(optionSetLabel, map, statusMetadata, service)).Value);
-            Assert.AreEqual(null, ImportMap.ConvertValue("UNKNOWNThing", map, statusMetadata, service));
+            ClassicAssert.AreEqual(entityRef, ImportMap.ConvertValue(entityRef, map, new LookupAttributeMetadata(), service));
+            ClassicAssert.AreEqual(optionSetInt, ((OptionSetValue)ImportMap.ConvertValue(optionSetLabel, map, statusMetadata, service)).Value);
+            ClassicAssert.AreEqual(null, ImportMap.ConvertValue("UNKNOWNThing", map, statusMetadata, service));
         }
 
-        [ExpectedException(typeof(Exception))]
-        [TestMethod]
+        [Test]
         public void TestMissingConversion()
         {
             FieldMap map = new FieldMap("source", "dest");
-            ImportMap.ConvertValue(1, map, new LookupAttributeMetadata(), service);
+            Assert.Throws<Exception>(() => ImportMap.ConvertValue(1, map, new LookupAttributeMetadata(), service));
         }
 
-        [TestMethod]
+        [Test]
         public void TestWithConverter()
         {
             string trueValue = "Y";
             FieldMap map = new FieldMap("source", "dest", new StringToBool(trueValue));
-            Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
         }
 
-        [TestMethod]
+        [Test]
         public void TestWithNullConverterList()
         {
             FieldMap map = new FieldMap("source", "dest", null);
-            Assert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
         }
 
-        [TestMethod]
+        [Test]
         public void TestWithEmptyConverterList()
         {
             FieldMap map = new FieldMap("source", "dest", new IConverter[0]);
-            Assert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue( true, map, new BooleanAttributeMetadata(), service));
         }
 
-        [TestMethod]
+        [Test]
         public void TestWithMultipleConverters()
         {
             string trueValue = "Yes";
             StringMapTranslation stringMapConverter = new StringMapTranslation(new Dictionary<string, string> { ["Yes"] = "Y" });
             StringToBool toBoolConverter = new StringToBool("Y");
             FieldMap map = new FieldMap("source", "dest", stringMapConverter, toBoolConverter);
-            Assert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
+            ClassicAssert.AreEqual(true, ImportMap.ConvertValue( trueValue, map, new BooleanAttributeMetadata(), service));
         }
 
         private Label GenerateLabel(string labelText)

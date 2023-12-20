@@ -1,35 +1,36 @@
 ﻿using CRMImporter.Converters;
 using FakeXrmEasy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Microsoft.Xrm.Sdk;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FakeXrmEasy.Abstractions;
+using NUnit.Framework.Legacy;
 
 namespace CRMImporterTests.Converters
 {
-    [TestClass]
     public class NullToStringTests
     {
-        private XrmFakedContext context;
+        private IXrmFakedContext context;
         private IOrganizationService service;
 
-        [TestInitialize]
+        [SetUp]
         public void SetUp()
         {
-            this.context = new XrmFakedContext();
+            this.context = Utils.GetContext();
             this.service = this.context.GetOrganizationService();
         }
 
-        [TestMethod]
+        [Test]
         public void TestConvert()
         {
             NullToString test = new NullToString();
-            Assert.AreEqual("",test.Convert(null, service));
+            ClassicAssert.AreEqual("",test.Convert(null, service));
             test = new NullToString(" ");
-            Assert.AreEqual(" ",test.Convert(null, service));
+            ClassicAssert.AreEqual(" ",test.Convert(null, service));
         }
     }
 }

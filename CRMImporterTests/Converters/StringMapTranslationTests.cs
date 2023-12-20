@@ -1,22 +1,18 @@
 ﻿using CRMImporter.Converters;
 using FakeXrmEasy;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Xrm.Sdk;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace CRMImporterTests.Converters
 {
-    [TestClass]
     public class StringMapTranslationTests
     {
-        [TestMethod]
+        [Test]
         public void Test()
         {
-            XrmFakedContext context = new XrmFakedContext();
+            var context = Utils.GetContext();
             IOrganizationService service = context.GetOrganizationService();
             string original = "Original";
             string converted = "New";
@@ -24,8 +20,8 @@ namespace CRMImporterTests.Converters
             {
                 [original] = converted
             });
-            Assert.AreEqual(converted, converter.Convert(original, service));
-            Assert.AreEqual(null, converter.Convert("UNKNOWN", service));
+            ClassicAssert.AreEqual(converted, converter.Convert(original, service));
+            ClassicAssert.AreEqual(null, converter.Convert("UNKNOWN", service));
         }
     }
 }

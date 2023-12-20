@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Wycliffeassociates.CRMImport</id>
-    <version>$version$</version>
+    <version>$AssemblyVersion$</version>
     <title>CRMImport</title>
     <authors>@rbnswartz</authors>
     <owners>@rbnswartz</owners>

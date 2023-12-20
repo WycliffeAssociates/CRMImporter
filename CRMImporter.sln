@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMImporter", "CRMImporter\CRMImporter.csproj", "{65DBD5F7-AEA4-4D7D-9E0D-4425F2F0E624}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRMImporter", "CRMImporter\CRMImporter.csproj", "{65DBD5F7-AEA4-4D7D-9E0D-4425F2F0E624}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRMImporterTests", "CRMImporterTests\CRMImporterTests.csproj", "{F63BC33C-8A7F-44D9-BAC3-C9EEED93C154}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRMImporterTests", "CRMImporterTests\CRMImporterTests.csproj", "{F63BC33C-8A7F-44D9-BAC3-C9EEED93C154}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

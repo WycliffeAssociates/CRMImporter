@@ -1,25 +1,20 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Xrm.Sdk;
+﻿using Microsoft.Xrm.Sdk;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xrm.Sdk.Query;
-using FakeXrmEasy;
 using CRMImporter.ActionHandlers;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace CRMImporterTests.ActionHandlers
 {
-    [TestClass]
     public class DefaultCreateHandlerTests
     {
-        [TestMethod]
+        [Test]
         public void Test()
         {
             string fieldName = "field";
             string fieldInitialValue = "value";
-            XrmFakedContext context = new XrmFakedContext();
+            var context = Utils.GetContext();
             IOrganizationService service = context.GetOrganizationService();
             DefaultCreateHandler handler = new DefaultCreateHandler();
             Entity initialEntity = new Entity("entity", Guid.NewGuid())
@@ -28,7 +23,7 @@ namespace CRMImporterTests.ActionHandlers
             };
             handler.Execute(initialEntity, service);
             Entity post = service.Retrieve(initialEntity.LogicalName, initialEntity.Id, new ColumnSet(fieldName));
-            Assert.AreEqual(fieldInitialValue, post[fieldName]);
+            ClassicAssert.AreEqual(fieldInitialValue, post[fieldName]);
         }
     }
 }
